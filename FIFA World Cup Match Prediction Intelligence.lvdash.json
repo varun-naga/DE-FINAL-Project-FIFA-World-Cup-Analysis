@@ -1,0 +1,2398 @@
+{
+  "datasets": [
+    {
+      "name": "rivalries_ai",
+      "displayName": "Top Rivalries AI",
+      "queryLines": [
+        "SELECT\n",
+        "  team_1,\n",
+        "  team_2,\n",
+        "  total_meetings,\n",
+        "  team_1_wins,\n",
+        "  team_2_wins,\n",
+        "  draws,\n",
+        "  ai_query(\n",
+        "    'databricks-meta-llama-3-3-70b-instruct',\n",
+        "    CONCAT(\n",
+        "      'In one sentence, summarize this FIFA World Cup rivalry: ',\n",
+        "      team_1,\n",
+        "      ' vs ',\n",
+        "      team_2,\n",
+        "      '. ',\n",
+        "      'Total meetings: ',\n",
+        "      CAST(total_meetings AS STRING),\n",
+        "      '. ',\n",
+        "      team_1,\n",
+        "      ' wins: ',\n",
+        "      CAST(team_1_wins AS STRING),\n",
+        "      '. ',\n",
+        "      team_2,\n",
+        "      ' wins: ',\n",
+        "      CAST(team_2_wins AS STRING),\n",
+        "      '. ',\n",
+        "      'Draws: ',\n",
+        "      CAST(draws AS STRING),\n",
+        "      '.'\n",
+        "    )\n",
+        "  ) AS ai_rivalry_summary\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.head_to_head_gold\n",
+        "WHERE\n",
+        "  total_meetings >= 4\n",
+        "ORDER BY\n",
+        "  total_meetings DESC\n",
+        "LIMIT 10"
+      ],
+      "catalog": "fifa_worldcup",
+      "schema": "default"
+    },
+    {
+      "name": "team_rankings",
+      "displayName": "Team Win Rate Rankings",
+      "queryLines": [
+        "SELECT\n",
+        "  team,\n",
+        "  total_matches,\n",
+        "  win_rate,\n",
+        "  total_goals_scored\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.team_performance_gold\n",
+        "WHERE\n",
+        "  total_matches >= 10\n",
+        "ORDER BY\n",
+        "  win_rate DESC\n",
+        "LIMIT 15"
+      ],
+      "catalog": "fifa_worldcup",
+      "schema": "default"
+    },
+    {
+      "name": "tournament_summary",
+      "displayName": "Tournament Summary",
+      "queryLines": [
+        "SELECT\n",
+        "  tournament_name AS tournament,\n",
+        "  total_matches AS matches,\n",
+        "  ROUND(avg_goals_per_match, 2) AS avg_goals,\n",
+        "  penalty_shootouts AS penalties,\n",
+        "  ROUND(draw_rate, 1) AS draw_pct\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.tournament_summary_gold\n",
+        "ORDER BY\n",
+        "  start_date DESC"
+      ],
+      "catalog": "fifa_worldcup",
+      "schema": "default"
+    },
+    {
+      "name": "ai_match_preview",
+      "displayName": "AI Match Preview",
+      "queryLines": [
+        "SELECT\n",
+        "  home_team,\n",
+        "  away_team,\n",
+        "  stage_name,\n",
+        "  home_goals,\n",
+        "  away_goals,\n",
+        "  ai_query(\n",
+        "    'databricks-meta-llama-3-3-70b-instruct',\n",
+        "    CONCAT(\n",
+        "      'Generate a 2-sentence analytical preview for this 2022 FIFA World Cup match: ',\n",
+        "      home_team,\n",
+        "      ' vs ',\n",
+        "      away_team,\n",
+        "      ' (',\n",
+        "      stage_name,\n",
+        "      '). ',\n",
+        "      'Final score: ',\n",
+        "      CAST(home_goals AS STRING),\n",
+        "      '-',\n",
+        "      CAST(away_goals AS STRING),\n",
+        "      '. ',\n",
+        "      'Focus on what made this matchup significant or surprising.'\n",
+        "    )\n",
+        "  ) AS ai_match_preview\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.matches_silver\n",
+        "WHERE\n",
+        "  tournament_name LIKE '2022%'\n",
+        "ORDER BY\n",
+        "  match_date\n",
+        "LIMIT 8"
+      ],
+      "catalog": "fifa_worldcup",
+      "schema": "default"
+    },
+    {
+      "name": "era_trends",
+      "displayName": "Era Trends",
+      "queryLines": [
+        "SELECT\n",
+        "  era,\n",
+        "  avg_goals_per_match,\n",
+        "  total_matches,\n",
+        "  home_win_rate,\n",
+        "  close_match_rate\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.era_trends_gold\n",
+        "ORDER BY\n",
+        "  era"
+      ],
+      "catalog": "fifa_worldcup",
+      "schema": "default"
+    },
+    {
+      "name": "upset_v2",
+      "displayName": "Upset Analysis",
+      "queryLines": [
+        "SELECT\n",
+        "  gap_bucket AS matchup_type,\n",
+        "  COUNT(*) AS total_matches,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN is_upset = true THEN 1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS upsets,\n",
+        "  ROUND(\n",
+        "    100.0\n",
+        "      * SUM(\n",
+        "        CASE\n",
+        "          WHEN is_upset = true THEN 1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      )\n",
+        "      / COUNT(*),\n",
+        "    1\n",
+        "  ) AS upset_rate_pct\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.upset_probability_gold\n",
+        "GROUP BY\n",
+        "  gap_bucket\n",
+        "ORDER BY\n",
+        "  upset_rate_pct DESC"
+      ],
+      "catalog": "fifa_worldcup",
+      "schema": "default"
+    },
+    {
+      "name": "home_adv_v2",
+      "displayName": "Home Advantage",
+      "queryLines": [
+        "SELECT\n",
+        "  era,\n",
+        "  stage_name,\n",
+        "  ROUND(AVG(home_win_rate), 1) AS home_win_rate,\n",
+        "  SUM(total_matches) AS total_matches\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.home_advantage_gold\n",
+        "WHERE\n",
+        "  total_matches >= 5\n",
+        "GROUP BY\n",
+        "  era,\n",
+        "  stage_name\n",
+        "ORDER BY\n",
+        "  era,\n",
+        "  stage_name"
+      ],
+      "catalog": "fifa_worldcup",
+      "schema": "default"
+    },
+    {
+      "name": "model_pred_v2",
+      "displayName": "Model Serving Predictions",
+      "queryLines": [
+        "SELECT\n",
+        "  home_team,\n",
+        "  away_team,\n",
+        "  match_date,\n",
+        "  stage_name,\n",
+        "  CASE home_result\n",
+        "    WHEN 'W' THEN 'Home Win'\n",
+        "    WHEN 'D' THEN 'Draw'\n",
+        "    WHEN 'L' THEN 'Away Win'\n",
+        "  END AS actual_outcome,\n",
+        "  CASE\n",
+        "    ai_query(\n",
+        "      'match-outcome-predictor',\n",
+        "      request =>\n",
+        "        named_struct(\n",
+        "          'home_form_5_win_rate',\n",
+        "          home_form_5_win_rate,\n",
+        "          'home_form_10_win_rate',\n",
+        "          home_form_10_win_rate,\n",
+        "          'home_form_5_avg_goals',\n",
+        "          home_form_5_avg_goals,\n",
+        "          'home_days_rest',\n",
+        "          CAST(home_days_rest AS DOUBLE),\n",
+        "          'away_form_5_win_rate',\n",
+        "          away_form_5_win_rate,\n",
+        "          'away_form_10_win_rate',\n",
+        "          away_form_10_win_rate,\n",
+        "          'away_form_5_avg_goals',\n",
+        "          away_form_5_avg_goals,\n",
+        "          'away_days_rest',\n",
+        "          CAST(away_days_rest AS DOUBLE),\n",
+        "          'total_meetings',\n",
+        "          CAST(total_meetings AS DOUBLE),\n",
+        "          'h2h_team1_wins',\n",
+        "          CAST(h2h_team1_wins AS DOUBLE),\n",
+        "          'h2h_team2_wins',\n",
+        "          CAST(h2h_team2_wins AS DOUBLE)\n",
+        "        ),\n",
+        "      returnType => 'STRING'\n",
+        "    )\n",
+        "    WHEN '0' THEN 'Home Win'\n",
+        "    WHEN '1' THEN 'Draw'\n",
+        "    WHEN '2' THEN 'Away Win'\n",
+        "    WHEN 'home_win' THEN 'Home Win'\n",
+        "    WHEN 'draw' THEN 'Draw'\n",
+        "    WHEN 'away_win' THEN 'Away Win'\n",
+        "    ELSE 'Unknown'\n",
+        "  END AS predicted_outcome,\n",
+        "  CASE\n",
+        "    WHEN\n",
+        "      (\n",
+        "        home_result = 'W'\n",
+        "        AND ai_query(\n",
+        "          'match-outcome-predictor',\n",
+        "          request =>\n",
+        "            named_struct(\n",
+        "              'home_form_5_win_rate',\n",
+        "              home_form_5_win_rate,\n",
+        "              'home_form_10_win_rate',\n",
+        "              home_form_10_win_rate,\n",
+        "              'home_form_5_avg_goals',\n",
+        "              home_form_5_avg_goals,\n",
+        "              'home_days_rest',\n",
+        "              CAST(home_days_rest AS DOUBLE),\n",
+        "              'away_form_5_win_rate',\n",
+        "              away_form_5_win_rate,\n",
+        "              'away_form_10_win_rate',\n",
+        "              away_form_10_win_rate,\n",
+        "              'away_form_5_avg_goals',\n",
+        "              away_form_5_avg_goals,\n",
+        "              'away_days_rest',\n",
+        "              CAST(away_days_rest AS DOUBLE),\n",
+        "              'total_meetings',\n",
+        "              CAST(total_meetings AS DOUBLE),\n",
+        "              'h2h_team1_wins',\n",
+        "              CAST(h2h_team1_wins AS DOUBLE),\n",
+        "              'h2h_team2_wins',\n",
+        "              CAST(h2h_team2_wins AS DOUBLE)\n",
+        "            ),\n",
+        "          returnType => 'STRING'\n",
+        "        ) IN ('home_win', '0')\n",
+        "      )\n",
+        "      OR (\n",
+        "        home_result = 'D'\n",
+        "        AND ai_query(\n",
+        "          'match-outcome-predictor',\n",
+        "          request =>\n",
+        "            named_struct(\n",
+        "              'home_form_5_win_rate',\n",
+        "              home_form_5_win_rate,\n",
+        "              'home_form_10_win_rate',\n",
+        "              home_form_10_win_rate,\n",
+        "              'home_form_5_avg_goals',\n",
+        "              home_form_5_avg_goals,\n",
+        "              'home_days_rest',\n",
+        "              CAST(home_days_rest AS DOUBLE),\n",
+        "              'away_form_5_win_rate',\n",
+        "              away_form_5_win_rate,\n",
+        "              'away_form_10_win_rate',\n",
+        "              away_form_10_win_rate,\n",
+        "              'away_form_5_avg_goals',\n",
+        "              away_form_5_avg_goals,\n",
+        "              'away_days_rest',\n",
+        "              CAST(away_days_rest AS DOUBLE),\n",
+        "              'total_meetings',\n",
+        "              CAST(total_meetings AS DOUBLE),\n",
+        "              'h2h_team1_wins',\n",
+        "              CAST(h2h_team1_wins AS DOUBLE),\n",
+        "              'h2h_team2_wins',\n",
+        "              CAST(h2h_team2_wins AS DOUBLE)\n",
+        "            ),\n",
+        "          returnType => 'STRING'\n",
+        "        ) IN ('draw', '1')\n",
+        "      )\n",
+        "      OR (\n",
+        "        home_result = 'L'\n",
+        "        AND ai_query(\n",
+        "          'match-outcome-predictor',\n",
+        "          request =>\n",
+        "            named_struct(\n",
+        "              'home_form_5_win_rate',\n",
+        "              home_form_5_win_rate,\n",
+        "              'home_form_10_win_rate',\n",
+        "              home_form_10_win_rate,\n",
+        "              'home_form_5_avg_goals',\n",
+        "              home_form_5_avg_goals,\n",
+        "              'home_days_rest',\n",
+        "              CAST(home_days_rest AS DOUBLE),\n",
+        "              'away_form_5_win_rate',\n",
+        "              away_form_5_win_rate,\n",
+        "              'away_form_10_win_rate',\n",
+        "              away_form_10_win_rate,\n",
+        "              'away_form_5_avg_goals',\n",
+        "              away_form_5_avg_goals,\n",
+        "              'away_days_rest',\n",
+        "              CAST(away_days_rest AS DOUBLE),\n",
+        "              'total_meetings',\n",
+        "              CAST(total_meetings AS DOUBLE),\n",
+        "              'h2h_team1_wins',\n",
+        "              CAST(h2h_team1_wins AS DOUBLE),\n",
+        "              'h2h_team2_wins',\n",
+        "              CAST(h2h_team2_wins AS DOUBLE)\n",
+        "            ),\n",
+        "          returnType => 'STRING'\n",
+        "        ) IN ('away_win', '2')\n",
+        "      )\n",
+        "    THEN\n",
+        "      'Correct'\n",
+        "    ELSE 'Wrong'\n",
+        "  END AS verdict\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.vw_match_prediction_features\n",
+        "ORDER BY\n",
+        "  match_date DESC\n",
+        "LIMIT 15"
+      ],
+      "catalog": "fifa_worldcup",
+      "schema": "default"
+    },
+    {
+      "name": "model_accuracy",
+      "displayName": "Model Accuracy",
+      "queryLines": [
+        "WITH predictions AS (\n",
+        "  SELECT\n",
+        "    home_result AS actual,\n",
+        "    ai_query(\n",
+        "      'match-outcome-predictor',\n",
+        "      request =>\n",
+        "        named_struct(\n",
+        "          'home_form_5_win_rate',\n",
+        "          home_form_5_win_rate,\n",
+        "          'home_form_10_win_rate',\n",
+        "          home_form_10_win_rate,\n",
+        "          'home_form_5_avg_goals',\n",
+        "          home_form_5_avg_goals,\n",
+        "          'home_days_rest',\n",
+        "          CAST(home_days_rest AS DOUBLE),\n",
+        "          'away_form_5_win_rate',\n",
+        "          away_form_5_win_rate,\n",
+        "          'away_form_10_win_rate',\n",
+        "          away_form_10_win_rate,\n",
+        "          'away_form_5_avg_goals',\n",
+        "          away_form_5_avg_goals,\n",
+        "          'away_days_rest',\n",
+        "          CAST(away_days_rest AS DOUBLE),\n",
+        "          'total_meetings',\n",
+        "          CAST(total_meetings AS DOUBLE),\n",
+        "          'h2h_team1_wins',\n",
+        "          CAST(h2h_team1_wins AS DOUBLE),\n",
+        "          'h2h_team2_wins',\n",
+        "          CAST(h2h_team2_wins AS DOUBLE)\n",
+        "        ),\n",
+        "      returnType => 'STRING'\n",
+        "    ) AS predicted\n",
+        "  FROM\n",
+        "    fifa_worldcup.match_prediction_dev.vw_match_prediction_features\n",
+        "  WHERE\n",
+        "    match_date >= '2014-01-01'\n",
+        ")\n",
+        "SELECT\n",
+        "  COUNT(*) AS total_predictions,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN\n",
+        "        (\n",
+        "          actual = 'W'\n",
+        "          AND predicted IN ('home_win', '0')\n",
+        "        )\n",
+        "        OR (\n",
+        "          actual = 'D'\n",
+        "          AND predicted IN ('draw', '1')\n",
+        "        )\n",
+        "        OR (\n",
+        "          actual = 'L'\n",
+        "          AND predicted IN ('away_win', '2')\n",
+        "        )\n",
+        "      THEN\n",
+        "        1\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS correct_predictions,\n",
+        "  ROUND(\n",
+        "    100.0\n",
+        "      * SUM(\n",
+        "        CASE\n",
+        "          WHEN\n",
+        "            (\n",
+        "              actual = 'W'\n",
+        "              AND predicted IN ('home_win', '0')\n",
+        "            )\n",
+        "            OR (\n",
+        "              actual = 'D'\n",
+        "              AND predicted IN ('draw', '1')\n",
+        "            )\n",
+        "            OR (\n",
+        "              actual = 'L'\n",
+        "              AND predicted IN ('away_win', '2')\n",
+        "            )\n",
+        "          THEN\n",
+        "            1\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      )\n",
+        "      / COUNT(*),\n",
+        "    1\n",
+        "  ) AS accuracy_pct\n",
+        "FROM\n",
+        "  predictions"
+      ]
+    },
+    {
+      "name": "kpi_summary",
+      "displayName": "KPI Summary",
+      "queryLines": [
+        "SELECT\n",
+        "  COUNT(DISTINCT tournament_name) AS total_tournaments,\n",
+        "  COUNT(*) AS total_matches,\n",
+        "  COUNT(DISTINCT home_team) AS total_teams,\n",
+        "  ROUND(AVG(home_goals + away_goals), 2) AS avg_goals_per_match,\n",
+        "  MAX(match_date) AS latest_match\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.matches_silver"
+      ]
+    },
+    {
+      "name": "stage_perf_v2",
+      "displayName": "Stage Performance",
+      "queryLines": [
+        "SELECT\n",
+        "  team,\n",
+        "  stage_category AS stage_name,\n",
+        "  matches_played AS total_matches,\n",
+        "  wins,\n",
+        "  draws,\n",
+        "  losses,\n",
+        "  ROUND(win_rate, 1) AS win_rate,\n",
+        "  goals_scored,\n",
+        "  goals_conceded\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.stage_performance_gold\n",
+        "WHERE\n",
+        "  matches_played >= 3\n",
+        "ORDER BY\n",
+        "  win_rate DESC"
+      ]
+    },
+    {
+      "name": "knockout_v3",
+      "displayName": "Knockout Stage Specialists",
+      "queryLines": [
+        "SELECT\n",
+        "  team,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN stage_category NOT LIKE '%group%' THEN wins\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS knockout_wins,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN stage_category NOT LIKE '%group%' THEN matches_played\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS knockout_matches,\n",
+        "  ROUND(\n",
+        "    100.0\n",
+        "      * SUM(\n",
+        "        CASE\n",
+        "          WHEN stage_category NOT LIKE '%group%' THEN wins\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      )\n",
+        "      / NULLIF(\n",
+        "        SUM(\n",
+        "          CASE\n",
+        "            WHEN stage_category NOT LIKE '%group%' THEN matches_played\n",
+        "            ELSE 0\n",
+        "          END\n",
+        "        ),\n",
+        "        0\n",
+        "      ),\n",
+        "    1\n",
+        "  ) AS knockout_win_rate,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN stage_category LIKE '%group%' THEN wins\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS group_wins,\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN stage_category LIKE '%group%' THEN matches_played\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) AS group_matches,\n",
+        "  ROUND(\n",
+        "    100.0\n",
+        "      * SUM(\n",
+        "        CASE\n",
+        "          WHEN stage_category LIKE '%group%' THEN wins\n",
+        "          ELSE 0\n",
+        "        END\n",
+        "      )\n",
+        "      / NULLIF(\n",
+        "        SUM(\n",
+        "          CASE\n",
+        "            WHEN stage_category LIKE '%group%' THEN matches_played\n",
+        "            ELSE 0\n",
+        "          END\n",
+        "        ),\n",
+        "        0\n",
+        "      ),\n",
+        "    1\n",
+        "  ) AS group_win_rate\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.stage_performance_gold\n",
+        "GROUP BY\n",
+        "  team\n",
+        "HAVING\n",
+        "  SUM(\n",
+        "    CASE\n",
+        "      WHEN stage_category NOT LIKE '%group%' THEN matches_played\n",
+        "      ELSE 0\n",
+        "    END\n",
+        "  ) >= 5\n",
+        "ORDER BY\n",
+        "  knockout_win_rate DESC\n",
+        "LIMIT 12"
+      ]
+    },
+    {
+      "name": "outcome_distribution",
+      "displayName": "Match Outcome Distribution",
+      "queryLines": [
+        "SELECT\n",
+        "  CASE match_outcome\n",
+        "    WHEN 'home_win' THEN 'Home Win'\n",
+        "    WHEN 'draw' THEN 'Draw'\n",
+        "    WHEN 'away_win' THEN 'Away Win'\n",
+        "  END AS outcome,\n",
+        "  COUNT(*) AS matches,\n",
+        "  ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 1) AS pct\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.matches_silver\n",
+        "GROUP BY\n",
+        "  match_outcome"
+      ]
+    },
+    {
+      "name": "home_adv_trend",
+      "displayName": "Home Advantage Trend",
+      "queryLines": [
+        "SELECT\n",
+        "  era,\n",
+        "  ROUND(AVG(home_win_rate), 1) AS home_win_rate,\n",
+        "  ROUND(AVG(away_win_rate), 1) AS away_win_rate,\n",
+        "  ROUND(AVG(draw_rate), 1) AS draw_rate\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.home_advantage_gold\n",
+        "WHERE\n",
+        "  total_matches >= 3\n",
+        "GROUP BY\n",
+        "  era\n",
+        "ORDER BY\n",
+        "  era"
+      ]
+    },
+    {
+      "name": "knockout_scatter",
+      "displayName": "Knockout Attack vs Defense",
+      "queryLines": [
+        "SELECT\n",
+        "  team,\n",
+        "  ROUND(goals_scored * 1.0 / matches_played, 2) AS goals_per_match,\n",
+        "  ROUND(goals_conceded * 1.0 / matches_played, 2) AS conceded_per_match,\n",
+        "  matches_played AS knockout_matches,\n",
+        "  ROUND(win_rate, 1) AS win_rate\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.stage_performance_gold\n",
+        "WHERE\n",
+        "  stage_category NOT LIKE '%group%'\n",
+        "  AND matches_played >= 5\n",
+        "ORDER BY\n",
+        "  goals_per_match DESC"
+      ]
+    },
+    {
+      "name": "team_filter_options",
+      "displayName": "Team Filter Options",
+      "queryLines": [
+        "SELECT DISTINCT\n",
+        "  team\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.team_performance_gold\n",
+        "WHERE\n",
+        "  total_matches >= 5\n",
+        "ORDER BY\n",
+        "  team"
+      ]
+    },
+    {
+      "name": "era_filter_options",
+      "displayName": "Era Filter Options",
+      "queryLines": [
+        "SELECT DISTINCT\n",
+        "  era\n",
+        "FROM\n",
+        "  fifa_worldcup.match_prediction_dev.era_trends_gold\n",
+        "ORDER BY\n",
+        "  era"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "a456d5bb",
+      "displayName": "Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "ai_match_preview",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ai_match_preview",
+                  "fields": [
+                    {
+                      "name": "home_team",
+                      "expression": "`home_team`"
+                    },
+                    {
+                      "name": "away_team",
+                      "expression": "`away_team`"
+                    },
+                    {
+                      "name": "stage_name",
+                      "expression": "`stage_name`"
+                    },
+                    {
+                      "name": "home_goals",
+                      "expression": "`home_goals`"
+                    },
+                    {
+                      "name": "away_goals",
+                      "expression": "`away_goals`"
+                    },
+                    {
+                      "name": "ai_match_preview",
+                      "expression": "`ai_match_preview`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "AI Match Preview Generator",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "home_team"
+                  },
+                  {
+                    "fieldName": "away_team"
+                  },
+                  {
+                    "fieldName": "stage_name",
+                    "displayName": "Stage"
+                  },
+                  {
+                    "fieldName": "home_goals",
+                    "displayName": "H"
+                  },
+                  {
+                    "fieldName": "away_goals",
+                    "displayName": "A"
+                  },
+                  {
+                    "fieldName": "ai_match_preview",
+                    "displayName": "AI Preview",
+                    "style": {
+                      "type": "html"
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "team_win_rate",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "team_rankings",
+                  "fields": [
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    },
+                    {
+                      "name": "win_rate",
+                      "expression": "`win_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "All-Time Team Win Rate Rankings",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Germany leads historically at 66%, followed by Brazil at 65%"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "team",
+                  "axis": {
+                    "title": "National Team"
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "win_rate",
+                  "axis": {
+                    "title": "Win Rate (%)"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": false
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 13,
+            "width": 8,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "model_predictions",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_pred_v2",
+                  "fields": [
+                    {
+                      "name": "home_team",
+                      "expression": "`home_team`"
+                    },
+                    {
+                      "name": "away_team",
+                      "expression": "`away_team`"
+                    },
+                    {
+                      "name": "stage_name",
+                      "expression": "`stage_name`"
+                    },
+                    {
+                      "name": "actual_outcome",
+                      "expression": "`actual_outcome`"
+                    },
+                    {
+                      "name": "predicted_outcome",
+                      "expression": "`predicted_outcome`"
+                    },
+                    {
+                      "name": "verdict",
+                      "expression": "`verdict`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Live Model Predictions vs Actual Results",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Real-time predictions from the match-outcome-predictor endpoint against historical results."
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "home_team",
+                    "displayName": "Home"
+                  },
+                  {
+                    "fieldName": "away_team",
+                    "displayName": "Away"
+                  },
+                  {
+                    "fieldName": "stage_name",
+                    "displayName": "Stage"
+                  },
+                  {
+                    "fieldName": "actual_outcome",
+                    "displayName": "Actual"
+                  },
+                  {
+                    "fieldName": "predicted_outcome",
+                    "displayName": "Predicted"
+                  },
+                  {
+                    "fieldName": "verdict",
+                    "displayName": "Result",
+                    "style": {
+                      "type": "basic",
+                      "rules": [
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "Correct"
+                            },
+                            "operator": "="
+                          },
+                          "backgroundColor": "#D4EDDA",
+                          "foregroundColor": "#155724"
+                        },
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "Wrong"
+                            },
+                            "operator": "="
+                          },
+                          "backgroundColor": "#F8D7DA",
+                          "foregroundColor": "#721C24"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 20,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "accuracy_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_accuracy",
+                  "fields": [
+                    {
+                      "name": "accuracy_pct",
+                      "expression": "`accuracy_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Live Prediction Accuracy",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "XGBoost model scored against 291 post-2014 matches via live serving endpoint"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "accuracy_pct",
+                  "formatTemplate": "{{ @formatted }}%"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 18,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "correct_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "model_accuracy",
+                  "fields": [
+                    {
+                      "name": "correct_predictions",
+                      "expression": "`correct_predictions`"
+                    },
+                    {
+                      "name": "total_predictions",
+                      "expression": "`total_predictions`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Correct Predictions",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Correct / Total predictions from the live endpoint"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "correct_predictions",
+                  "formatTemplate": "{{ @formatted }} / {{ total_predictions }}",
+                  "style": {
+                    "fontSize": 20,
+                    "bold": true
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 10,
+            "y": 18,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## FIFA World Cup Match Prediction Intelligence\n",
+                "AI-powered analysis of **1,248 matches** across **30 tournaments** (1930–2022). XGBoost model accuracy: **59.5%** — outperforming random baseline by 26 points."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_tournaments",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "kpi_summary",
+                  "fields": [
+                    {
+                      "name": "total_tournaments",
+                      "expression": "`total_tournaments`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "World Cups Covered",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Men's & Women's tournaments since 1930"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_tournaments"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_matches",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "kpi_summary",
+                  "fields": [
+                    {
+                      "name": "total_matches",
+                      "expression": "`total_matches`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Matches Analyzed",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Training data for our prediction model"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_matches"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_teams",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "kpi_summary",
+                  "fields": [
+                    {
+                      "name": "total_teams",
+                      "expression": "`total_teams`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Nations",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "National teams in our dataset"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_teams"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_goals",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "kpi_summary",
+                  "fields": [
+                    {
+                      "name": "avg_goals_per_match",
+                      "expression": "`avg_goals_per_match`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Goals Per Match",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "All-time average across all tournaments"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg_goals_per_match"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "ai_section_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "---\n",
+                "#### 2022 World Cup — AI Match Previews"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "model_section_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "---\n",
+                "#### Live Model Performance\n",
+                "Every prediction calls the `match-outcome-predictor` endpoint in real-time using 11 features (team form, H2H, rest days)."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 18,
+            "width": 8,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "outcome_pie",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "outcome_distribution",
+                  "fields": [
+                    {
+                      "name": "matches",
+                      "expression": "`matches`"
+                    },
+                    {
+                      "name": "outcome",
+                      "expression": "`outcome`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "title": "Match Outcome Distribution",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Home teams win 44% of matches — advantage is real but not decisive"
+              },
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "matches",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "outcome",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "Home Win",
+                        "color": "#1B5E9E"
+                      },
+                      {
+                        "value": "Draw",
+                        "color": "#7C4DFF"
+                      },
+                      {
+                        "value": "Away Win",
+                        "color": "#D64545"
+                      }
+                    ]
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 4,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "tournament_trends",
+      "displayName": "Tournaments",
+      "layout": [
+        {
+          "widget": {
+            "name": "goals_era",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "era_trends",
+                  "fields": [
+                    {
+                      "name": "era",
+                      "expression": "`era`"
+                    },
+                    {
+                      "name": "avg_goals_per_match",
+                      "expression": "`avg_goals_per_match`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Scoring Trends Across Eras",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Goals per match peaked in the 1950s (5.38) and have stabilized around 2.5-2.8 since the 1990s"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "era",
+                  "axis": {
+                    "title": "Decade"
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_goals_per_match",
+                  "axis": {
+                    "title": "Avg Goals Per Match"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "upset_analysis",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "upset_v2",
+                  "fields": [
+                    {
+                      "name": "matchup_type",
+                      "expression": "`matchup_type`"
+                    },
+                    {
+                      "name": "upset_rate_pct",
+                      "expression": "`upset_rate_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Upset Rate by Strength Gap",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Close matches (0-5% gap) produce 4x more upsets than lopsided ones (30%+)"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "matchup_type",
+                  "axis": {
+                    "title": "Win Rate Gap Between Teams"
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "upset_rate_pct",
+                  "axis": {
+                    "title": "Upset Rate (%)"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "tournament_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "tournament_summary",
+                  "fields": [
+                    {
+                      "name": "tournament",
+                      "expression": "`tournament`"
+                    },
+                    {
+                      "name": "matches",
+                      "expression": "`matches`"
+                    },
+                    {
+                      "name": "avg_goals",
+                      "expression": "`avg_goals`"
+                    },
+                    {
+                      "name": "penalties",
+                      "expression": "`penalties`"
+                    },
+                    {
+                      "name": "draw_pct",
+                      "expression": "`draw_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Tournament Comparison",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "All 30 FIFA World Cup editions ordered by most recent"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "tournament",
+                    "displayName": "Tournament"
+                  },
+                  {
+                    "fieldName": "matches",
+                    "displayName": "Matches"
+                  },
+                  {
+                    "fieldName": "avg_goals",
+                    "displayName": "Avg Goals"
+                  },
+                  {
+                    "fieldName": "penalties",
+                    "displayName": "Shootouts"
+                  },
+                  {
+                    "fieldName": "draw_pct",
+                    "displayName": "Draw %"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 7,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "#### How Has the World Cup Evolved?\n",
+                "Scoring trends, upset patterns, and competitive balance across 9 decades."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "head_to_head",
+      "displayName": "Matchups",
+      "layout": [
+        {
+          "widget": {
+            "name": "rivalries",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "rivalries_ai",
+                  "fields": [
+                    {
+                      "name": "team_1",
+                      "expression": "`team_1`"
+                    },
+                    {
+                      "name": "team_2",
+                      "expression": "`team_2`"
+                    },
+                    {
+                      "name": "total_meetings",
+                      "expression": "`total_meetings`"
+                    },
+                    {
+                      "name": "team_1_wins",
+                      "expression": "`team_1_wins`"
+                    },
+                    {
+                      "name": "team_2_wins",
+                      "expression": "`team_2_wins`"
+                    },
+                    {
+                      "name": "draws",
+                      "expression": "`draws`"
+                    },
+                    {
+                      "name": "ai_rivalry_summary",
+                      "expression": "`ai_rivalry_summary`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Top Rivalries with AI Commentary",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "team_1"
+                  },
+                  {
+                    "fieldName": "team_2"
+                  },
+                  {
+                    "fieldName": "total_meetings"
+                  },
+                  {
+                    "fieldName": "team_1_wins"
+                  },
+                  {
+                    "fieldName": "team_2_wins"
+                  },
+                  {
+                    "fieldName": "draws"
+                  },
+                  {
+                    "fieldName": "ai_rivalry_summary",
+                    "style": {
+                      "type": "html"
+                    }
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "home_advantage",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "home_adv_v2",
+                  "fields": [
+                    {
+                      "name": "stage_name",
+                      "expression": "`stage_name`"
+                    },
+                    {
+                      "name": "era",
+                      "expression": "`era`"
+                    },
+                    {
+                      "name": "home_win_rate",
+                      "expression": "`home_win_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Home Advantage by Era & Stage",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "era",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "home_win_rate",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "stage_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "#### Rivalries & Home Advantage\n",
+                "AI-analyzed matchups and the declining home advantage effect across eras."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "home_trend_line",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "home_adv_trend",
+                  "fields": [
+                    {
+                      "name": "era",
+                      "expression": "`era`"
+                    },
+                    {
+                      "name": "home_win_rate",
+                      "expression": "`home_win_rate`"
+                    },
+                    {
+                      "name": "away_win_rate",
+                      "expression": "`away_win_rate`"
+                    },
+                    {
+                      "name": "draw_rate",
+                      "expression": "`draw_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Home Advantage Decline Over Decades",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Home win rate collapsed from 88% (1930s) to 47% (2020s). Away teams now win 22-35% of the time vs nearly 0% historically."
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "era",
+                  "axis": {
+                    "title": "Era"
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fields": [
+                    {
+                      "fieldName": "home_win_rate",
+                      "displayName": "Home Win %"
+                    },
+                    {
+                      "fieldName": "away_win_rate",
+                      "displayName": "Away Win %"
+                    },
+                    {
+                      "fieldName": "draw_rate",
+                      "displayName": "Draw %"
+                    }
+                  ],
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "axis": {
+                    "title": "Rate (%)"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 12,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "team_deep_dive",
+      "displayName": "Knockouts",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "#### Who Performs When It Matters Most?\n",
+                "Knockout-stage win rates vs group stage — teams that thrive under elimination pressure."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "stage_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "stage_perf_v2",
+                  "fields": [
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    },
+                    {
+                      "name": "stage_name",
+                      "expression": "`stage_name`"
+                    },
+                    {
+                      "name": "total_matches",
+                      "expression": "`total_matches`"
+                    },
+                    {
+                      "name": "wins",
+                      "expression": "`wins`"
+                    },
+                    {
+                      "name": "win_rate",
+                      "expression": "`win_rate`"
+                    },
+                    {
+                      "name": "goals_scored",
+                      "expression": "`goals_scored`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Detailed Stage Performance",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "team"
+                  },
+                  {
+                    "fieldName": "stage_name",
+                    "displayName": "Stage"
+                  },
+                  {
+                    "fieldName": "total_matches",
+                    "displayName": "Matches"
+                  },
+                  {
+                    "fieldName": "wins",
+                    "displayName": "W"
+                  },
+                  {
+                    "fieldName": "win_rate",
+                    "displayName": "Win %"
+                  },
+                  {
+                    "fieldName": "goals_scored",
+                    "displayName": "Goals"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "knockout_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "knockout_v3",
+                  "fields": [
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    },
+                    {
+                      "name": "knockout_win_rate",
+                      "expression": "`knockout_win_rate`"
+                    },
+                    {
+                      "name": "group_win_rate",
+                      "expression": "`group_win_rate`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Knockout vs Group Stage Win Rate",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Teams with 5+ knockout matches. Higher knockout performance = true tournament pedigree."
+              },
+              "mark": {
+                "layout": "group"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "team",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fields": [
+                    {
+                      "fieldName": "knockout_win_rate",
+                      "displayName": "Knockout Rounds"
+                    },
+                    {
+                      "fieldName": "group_win_rate",
+                      "displayName": "Group Stage"
+                    }
+                  ],
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "axis": {
+                    "title": "Win Rate (%)"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "scatter_attack",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "knockout_scatter",
+                  "fields": [
+                    {
+                      "name": "win_rate",
+                      "expression": "`win_rate`"
+                    },
+                    {
+                      "name": "conceded_per_match",
+                      "expression": "`conceded_per_match`"
+                    },
+                    {
+                      "name": "goals_per_match",
+                      "expression": "`goals_per_match`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Knockout Attack vs Defense Profile",
+                "showTitle": true,
+                "showDescription": true,
+                "description": "Bubble size = win rate. Top-left quadrant = elite (score heavily, concede little). Bottom-right = vulnerable (concede more than they score)."
+              },
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "conceded_per_match",
+                  "axis": {
+                    "title": "Goals Conceded Per Match"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "goals_per_match",
+                  "axis": {
+                    "title": "Goals Scored Per Match"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "size": {
+                  "fieldName": "win_rate",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 12,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "global_filters",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "team_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d665d61f028897bb71ce807f26_team",
+                "query": {
+                  "datasetName": "team_filter_options",
+                  "fields": [
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    },
+                    {
+                      "name": "team_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180caed6d1539a62c045fb7e89ec7_team",
+                "query": {
+                  "datasetName": "team_rankings",
+                  "fields": [
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    },
+                    {
+                      "name": "team_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d3befd1cad824c8580a9809542_team",
+                "query": {
+                  "datasetName": "knockout_v3",
+                  "fields": [
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    },
+                    {
+                      "name": "team_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d3be131430b13cc9bfa96b61f7_team",
+                "query": {
+                  "datasetName": "stage_perf_v2",
+                  "fields": [
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    },
+                    {
+                      "name": "team_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d59a8716b784b94b9bb8203b1d_team",
+                "query": {
+                  "datasetName": "knockout_scatter",
+                  "fields": [
+                    {
+                      "name": "team",
+                      "expression": "`team`"
+                    },
+                    {
+                      "name": "team_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Team",
+                "showTitle": true
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "team",
+                    "queryName": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d665d61f028897bb71ce807f26_team"
+                  },
+                  {
+                    "fieldName": "team",
+                    "queryName": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180caed6d1539a62c045fb7e89ec7_team"
+                  },
+                  {
+                    "fieldName": "team",
+                    "queryName": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d3befd1cad824c8580a9809542_team"
+                  },
+                  {
+                    "fieldName": "team",
+                    "queryName": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d3be131430b13cc9bfa96b61f7_team"
+                  },
+                  {
+                    "fieldName": "team",
+                    "queryName": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d59a8716b784b94b9bb8203b1d_team"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "era_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d6ccae10288d2d0ca552dfa4aa_era",
+                "query": {
+                  "datasetName": "era_filter_options",
+                  "fields": [
+                    {
+                      "name": "era",
+                      "expression": "`era`"
+                    },
+                    {
+                      "name": "era_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180cb478d1e619caac9a1829c15d7_era",
+                "query": {
+                  "datasetName": "era_trends",
+                  "fields": [
+                    {
+                      "name": "era",
+                      "expression": "`era`"
+                    },
+                    {
+                      "name": "era_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d599d61fc8904468903f352935_era",
+                "query": {
+                  "datasetName": "home_adv_trend",
+                  "fields": [
+                    {
+                      "name": "era",
+                      "expression": "`era`"
+                    },
+                    {
+                      "name": "era_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180cc88fa1c468bb4ba8c36810a27_era",
+                "query": {
+                  "datasetName": "home_adv_v2",
+                  "fields": [
+                    {
+                      "name": "era",
+                      "expression": "`era`"
+                    },
+                    {
+                      "name": "era_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Era",
+                "showTitle": true
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "era",
+                    "queryName": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d6ccae10288d2d0ca552dfa4aa_era"
+                  },
+                  {
+                    "fieldName": "era",
+                    "queryName": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180cb478d1e619caac9a1829c15d7_era"
+                  },
+                  {
+                    "fieldName": "era",
+                    "queryName": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180d599d61fc8904468903f352935_era"
+                  },
+                  {
+                    "fieldName": "era",
+                    "queryName": "dashboards/01f180ca8b461542a28ccf235d478c6a/datasets/01f180cc88fa1c468bb4ba8c36810a27_era"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#F8FAFC"
+      },
+      "widgetBackgroundColor": {
+        "light": "#FFFFFF"
+      },
+      "widgetBorderColor": {
+        "light": "#E2E8F0"
+      },
+      "visualizationColors": [
+        "#1B5E9E",
+        "#D64545",
+        "#2B7A4B",
+        "#7C4DFF",
+        "#E67700",
+        "#0891B2",
+        "#BE185D",
+        "#4338CA"
+      ],
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED",
+      "widgetPadding": 16,
+      "widgetMargin": 8,
+      "widgetCornerRadius": 8,
+      "widgetShadow": 5,
+      "fontSettings": {
+        "base": {
+          "fontFamily": "Inter",
+          "fontColor": {
+            "light": "#1A1A2E"
+          },
+          "fontSize": 13
+        },
+        "widgetTitle": {
+          "fontColor": {
+            "light": "#1A1A2E"
+          },
+          "fontSize": 14,
+          "fontWeight": 600
+        },
+        "widgetDescription": {
+          "fontColor": {
+            "light": "#4A5568"
+          },
+          "fontSize": 12
+        },
+        "fieldTitle": {
+          "fontColor": {
+            "light": "#2D3748"
+          },
+          "fontWeight": 500
+        },
+        "fieldValue": {
+          "fontColor": {
+            "light": "#1A1A2E"
+          }
+        }
+      },
+      "gridLineColor": {
+        "light": "#E2E8F0"
+      }
+    },
+    "applyModeEnabled": false
+  }
+}
