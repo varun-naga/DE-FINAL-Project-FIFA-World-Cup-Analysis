@@ -1,0 +1,806 @@
+{
+  "datasets": [
+    {
+      "name": "cd7d57ed",
+      "displayName": "Year Top Team by Goals",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  fifa_worldcup.team_analysis.best_goals_gold"
+      ]
+    },
+    {
+      "name": "53d717bc",
+      "displayName": "The best tactical teams",
+      "queryLines": [
+        "SELECT\n",
+        "  team_name,\n",
+        "  team_code,\n",
+        "  total_substitutions,\n",
+        "  subs_per_match,\n",
+        "  tactical_type\n",
+        "FROM\n",
+        "  fifa_worldcup.team_analysis.substitutions_gold\n",
+        "ORDER BY\n",
+        "  total_substitutions DESC\n",
+        "LIMIT 10"
+      ]
+    },
+    {
+      "name": "yearwise_best_team",
+      "displayName": "Year-wise Top Goals Scored Team",
+      "queryLines": [
+        "SELECT\n",
+        "  year,\n",
+        "  team_name,\n",
+        "  total_goals,\n",
+        "  matches_played\n",
+        "FROM\n",
+        "  fifa_worldcup.team_analysis.year_top_team\n",
+        "WHERE\n",
+        "  year = :year\n",
+        "ORDER BY\n",
+        "  year ASC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Year",
+          "keyword": "year",
+          "dataType": "INTEGER",
+          "defaultSelection": {
+            "values": {
+              "dataType": "INTEGER",
+              "values": [
+                {
+                  "value": "2022"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "year_options",
+      "displayName": "Year Options",
+      "queryLines": [
+        "SELECT DISTINCT\n",
+        "  year\n",
+        "FROM\n",
+        "  fifa_worldcup.team_analysis.goals_gold\n",
+        "ORDER BY\n",
+        "  year ASC"
+      ]
+    },
+    {
+      "name": "summary_stats",
+      "displayName": "FIFA Summary Stats",
+      "queryLines": [
+        "SELECT\n",
+        "  SUM(g.total_goals) AS total_goals,\n",
+        "  COUNT(DISTINCT g.year) AS total_years,\n",
+        "  COUNT(DISTINCT g.team_name) AS total_teams,\n",
+        "  COUNT(DISTINCT g.team_code) AS total_countries\n",
+        "FROM\n",
+        "  fifa_worldcup.team_analysis.goals_gold g"
+      ]
+    },
+    {
+      "name": "pressure_behavior",
+      "displayName": "Pressure Behavior Analysis",
+      "queryLines": [
+        "WITH top_pressure AS (\n",
+        "  SELECT\n",
+        "    team_name,\n",
+        "    early_fouls,\n",
+        "    late_fouls,\n",
+        "    aggression_score,\n",
+        "    discipline_type,\n",
+        "    ROUND(late_fouls * 1.0 / NULLIF(early_fouls, 0), 2) AS pressure_ratio\n",
+        "  FROM\n",
+        "    fifa_worldcup.team_analysis.bookings_gold\n",
+        "  WHERE\n",
+        "    early_fouls IS NOT NULL\n",
+        "    AND late_fouls IS NOT NULL\n",
+        "  ORDER BY\n",
+        "    pressure_ratio DESC\n",
+        "  LIMIT 10\n",
+        ")\n",
+        "SELECT\n",
+        "  team_name,\n",
+        "  'Early Fouls' AS foul_phase,\n",
+        "  early_fouls AS foul_count,\n",
+        "  pressure_ratio,\n",
+        "  discipline_type\n",
+        "FROM\n",
+        "  top_pressure\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  team_name,\n",
+        "  'Late Fouls' AS foul_phase,\n",
+        "  late_fouls AS foul_count,\n",
+        "  pressure_ratio,\n",
+        "  discipline_type\n",
+        "FROM\n",
+        "  top_pressure\n",
+        "ORDER BY\n",
+        "  pressure_ratio DESC,\n",
+        "  foul_phase"
+      ]
+    },
+    {
+      "name": "aggressive_disciplined",
+      "displayName": "Aggressive vs Disciplined Teams",
+      "queryLines": [
+        "WITH aggressive AS (\n",
+        "  SELECT\n",
+        "    team_name,\n",
+        "    team_code,\n",
+        "    yellow_cards,\n",
+        "    red_cards,\n",
+        "    total_cards,\n",
+        "    cards_per_match,\n",
+        "    aggression_score,\n",
+        "    discipline_type,\n",
+        "    'Aggressive' AS team_behavior\n",
+        "  FROM\n",
+        "    fifa_worldcup.team_analysis.bookings_gold\n",
+        "  ORDER BY\n",
+        "    aggression_rank ASC\n",
+        "  LIMIT 3\n",
+        "),\n",
+        "disciplined AS (\n",
+        "  SELECT\n",
+        "    team_name,\n",
+        "    team_code,\n",
+        "    yellow_cards,\n",
+        "    red_cards,\n",
+        "    total_cards,\n",
+        "    cards_per_match,\n",
+        "    aggression_score,\n",
+        "    discipline_type,\n",
+        "    'Disciplined' AS team_behavior\n",
+        "  FROM\n",
+        "    fifa_worldcup.team_analysis.bookings_gold\n",
+        "  ORDER BY\n",
+        "    discipline_rank ASC\n",
+        "  LIMIT 3\n",
+        ")\n",
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  aggressive\n",
+        "UNION ALL\n",
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  disciplined\n",
+        "ORDER BY\n",
+        "  team_behavior,\n",
+        "  cards_per_match DESC"
+      ]
+    },
+    {
+      "name": "most_penalty_team",
+      "displayName": "Most Penalty Team",
+      "queryLines": [
+        "SELECT\n",
+        "  team_name,\n",
+        "  total_penalties AS total_shootout_kicks,\n",
+        "  matches_played AS shootout_appearances,\n",
+        "  penalties_per_match AS kicks_per_shootout,\n",
+        "  penalty_rank\n",
+        "FROM\n",
+        "  fifa_worldcup.team_analysis.penalty_gold\n",
+        "WHERE\n",
+        "  matches_played >= 3\n",
+        "ORDER BY\n",
+        "  total_penalties DESC\n",
+        "LIMIT 5"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "e96d5be8",
+      "displayName": "Team Analytics",
+      "layout": [
+        {
+          "widget": {
+            "name": "0f031088",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## ⚽ FIFA World Cup — Team Performance Analysis\n",
+                "\n",
+                "Top performed teams across goals, bookings, substitutions, and penalty shootouts."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "820952ae",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "cd7d57ed",
+                  "fields": [
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "sum(total_goals)",
+                      "expression": "SUM(`total_goals`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top Team by Total Goals",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_goals)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 9,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "9e1467a6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "yearwise_best_team",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Year-wise Top Goals Scored Team",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "team_name",
+                  "style": {
+                    "fontSize": 24
+                  }
+                },
+                "target": {
+                  "fieldName": "year"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 4,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "609477a8",
+            "queries": [
+              {
+                "name": "dashboards/01f181d8d64814ba9545afe84fa92b23/datasets/01f181df174f10dba1bf0a0b7747af8c_year",
+                "query": {
+                  "datasetName": "year_options",
+                  "fields": [
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f181d8d64814ba9545afe84fa92b23/datasets/01f181deba2712aaa81b48b6fff253f4_year",
+                "query": {
+                  "datasetName": "yearwise_best_team",
+                  "parameters": [
+                    {
+                      "name": "year",
+                      "keyword": "year"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Select Year",
+                "showTitle": true
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "year",
+                    "queryName": "dashboards/01f181d8d64814ba9545afe84fa92b23/datasets/01f181df174f10dba1bf0a0b7747af8c_year"
+                  },
+                  {
+                    "parameterName": "year",
+                    "queryName": "parameter_dashboards/01f181d8d64814ba9545afe84fa92b23/datasets/01f181deba2712aaa81b48b6fff253f4_year"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 3,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "ee9ca4bf",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "summary_stats",
+                  "fields": [
+                    {
+                      "name": "sum(total_goals)",
+                      "expression": "SUM(`total_goals`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": " Total Goals",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_goals)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 1,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_years",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "summary_stats",
+                  "fields": [
+                    {
+                      "name": "total_teams",
+                      "expression": "`total_teams`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": " Total Teams\n",
+                "showTitle": true,
+                "showDescription": false
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_teams"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_countries",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "summary_stats",
+                  "fields": [
+                    {
+                      "name": "sum(total_countries)",
+                      "expression": "SUM(`total_countries`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": " Total Countries",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_countries)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 1,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "tactical_subs",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "53d717bc",
+                  "fields": [
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "total_substitutions",
+                      "expression": "`total_substitutions`"
+                    },
+                    {
+                      "name": "subs_per_match",
+                      "expression": "`subs_per_match`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Most Tactical Teams by Substitutions",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "total_substitutions"
+                  },
+                  {
+                    "fieldName": "subs_per_match"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 10,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "pressure_behavior",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "pressure_behavior",
+                  "fields": [
+                    {
+                      "name": "foul_phase",
+                      "expression": "`foul_phase`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "foul_count",
+                      "expression": "`foul_count`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "🧠 Pressure Behavior Analysis",
+                "showTitle": true
+              },
+              "widgetType": "area",
+              "encodings": {
+                "x": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "foul_count",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "foul_phase",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 16,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "e9b8ee48",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "aggressive_disciplined",
+                  "fields": [
+                    {
+                      "name": "team_behavior",
+                      "expression": "`team_behavior`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "red_cards",
+                      "expression": "`red_cards`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 3 Aggressive vs Top 3 Disciplined Teams",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "red_cards",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "team_behavior",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "Aggressive",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 4
+                        }
+                      },
+                      {
+                        "value": "Disciplined",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 3
+                        }
+                      }
+                    ]
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "penalty_gold_widget",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "most_penalty_team",
+                  "fields": [
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "penalty_rank",
+                      "expression": "`penalty_rank`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Most Penalty Shootout Teams",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "penalty_rank",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
