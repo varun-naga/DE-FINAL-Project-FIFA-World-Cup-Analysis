@@ -1,0 +1,2473 @@
+{
+  "datasets": [
+    {
+      "name": "substitutions_2022",
+      "displayName": "Substitutions - By Tournament",
+      "queryLines": [
+        "SELECT\n",
+        "  *,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.substitutions_per_player_per_tournament\n",
+        "WHERE\n",
+        "  tournament_id = :tournament_id\n",
+        "ORDER BY\n",
+        "  times_subbed_on DESC\n",
+        "LIMIT 10"
+      ],
+      "parameters": [
+        {
+          "displayName": "Tournament",
+          "keyword": "tournament_id",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "WC-2022"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "goals_all_tournaments",
+      "displayName": "Goals - All Tournaments",
+      "queryLines": [
+        "SELECT\n",
+        "  player_id,\n",
+        "  family_name,\n",
+        "  given_name,\n",
+        "  team_name,\n",
+        "  tournament_id,\n",
+        "  num_goals,\n",
+        "  gender,\n",
+        "  position_code,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.goals_per_player_per_tournament\n",
+        "ORDER BY\n",
+        "  num_goals DESC\n",
+        "LIMIT 20"
+      ]
+    },
+    {
+      "name": "bookings_all_tournaments",
+      "displayName": "Bookings - All Tournaments",
+      "queryLines": [
+        "SELECT\n",
+        "  player_id,\n",
+        "  family_name,\n",
+        "  given_name,\n",
+        "  team_name,\n",
+        "  tournament_id,\n",
+        "  num_bookings,\n",
+        "  yellow_cards,\n",
+        "  red_cards,\n",
+        "  gender,\n",
+        "  position_code,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.bookings_per_player_per_tournament\n",
+        "ORDER BY\n",
+        "  num_bookings DESC\n",
+        "LIMIT 20"
+      ]
+    },
+    {
+      "name": "bookings_2022",
+      "displayName": "Bookings - By Tournament",
+      "queryLines": [
+        "SELECT\n",
+        "  *,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.bookings_per_player_per_tournament\n",
+        "WHERE\n",
+        "  tournament_id = :tournament_id\n",
+        "ORDER BY\n",
+        "  num_bookings DESC\n",
+        "LIMIT 10"
+      ],
+      "parameters": [
+        {
+          "displayName": "Tournament",
+          "keyword": "tournament_id",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "WC-2022"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "penalty_kicks_2022",
+      "displayName": "Penalty Kicks - By Tournament",
+      "queryLines": [
+        "SELECT\n",
+        "  *,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.penalty_kicks_per_player_per_tournament\n",
+        "WHERE\n",
+        "  tournament_id = :tournament_id\n",
+        "ORDER BY\n",
+        "  penalty_shootout_goals DESC\n",
+        "LIMIT 10"
+      ],
+      "parameters": [
+        {
+          "displayName": "Tournament",
+          "keyword": "tournament_id",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "WC-2022"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "goals_2022",
+      "displayName": "Goals - By Tournament",
+      "queryLines": [
+        "SELECT\n",
+        "  *,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.goals_per_player_per_tournament\n",
+        "WHERE\n",
+        "  tournament_id = :tournament_id\n",
+        "ORDER BY\n",
+        "  num_goals DESC\n",
+        "LIMIT 10"
+      ],
+      "parameters": [
+        {
+          "displayName": "Tournament",
+          "keyword": "tournament_id",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "WC-2022"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "subs_off_2022",
+      "displayName": "Subs Off - By Tournament",
+      "queryLines": [
+        "SELECT\n",
+        "  *,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.subs_off_per_player_wc2022\n",
+        "ORDER BY\n",
+        "  times_subbed_off DESC\n",
+        "LIMIT 10"
+      ],
+      "parameters": [
+        {
+          "displayName": "Tournament",
+          "keyword": "tournament_id",
+          "dataType": "STRING",
+          "defaultSelection": {
+            "values": {
+              "dataType": "STRING",
+              "values": [
+                {
+                  "value": "WC-2022"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "substitutions_all_tournaments",
+      "displayName": "Substitutions - All Tournaments",
+      "queryLines": [
+        "SELECT\n",
+        "  player_id,\n",
+        "  family_name,\n",
+        "  given_name,\n",
+        "  team_name,\n",
+        "  tournament_id,\n",
+        "  times_subbed_on,\n",
+        "  times_subbed_off,\n",
+        "  gender,\n",
+        "  position_code,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.substitutions_per_player_per_tournament\n",
+        "ORDER BY\n",
+        "  times_subbed_on DESC\n",
+        "LIMIT 20"
+      ]
+    },
+    {
+      "name": "total_goals_all_time",
+      "displayName": "Total Goals - All Time",
+      "queryLines": [
+        "SELECT\n",
+        "  player_id,\n",
+        "  family_name,\n",
+        "  given_name,\n",
+        "  team_name,\n",
+        "  num_goals,\n",
+        "  gender,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.total_goals_per_player\n",
+        "ORDER BY\n",
+        "  num_goals DESC\n",
+        "LIMIT 15"
+      ]
+    },
+    {
+      "name": "total_substitutions",
+      "displayName": "Total Substitutions - All Time",
+      "queryLines": [
+        "SELECT\n",
+        "  player_id,\n",
+        "  family_name,\n",
+        "  given_name,\n",
+        "  team_name,\n",
+        "  times_subbed_on,\n",
+        "  times_subbed_off,\n",
+        "  gender,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.total_substitutions_per_player\n",
+        "ORDER BY\n",
+        "  times_subbed_on DESC\n",
+        "LIMIT 15"
+      ]
+    },
+    {
+      "name": "total_penalty_kicks",
+      "displayName": "Total Penalty Kicks - All Time",
+      "queryLines": [
+        "SELECT\n",
+        "  player_id,\n",
+        "  family_name,\n",
+        "  given_name,\n",
+        "  team_name,\n",
+        "  penalty_shootout_goals,\n",
+        "  num_penalty_kicks,\n",
+        "  gender,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.total_penalty_kicks_per_player\n",
+        "ORDER BY\n",
+        "  penalty_shootout_goals DESC\n",
+        "LIMIT 15"
+      ]
+    },
+    {
+      "name": "total_bookings",
+      "displayName": "Total Bookings - All Time",
+      "queryLines": [
+        "SELECT\n",
+        "  player_id,\n",
+        "  family_name,\n",
+        "  given_name,\n",
+        "  team_name,\n",
+        "  num_bookings,\n",
+        "  yellow_cards,\n",
+        "  red_cards,\n",
+        "  gender,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.total_bookings_per_player\n",
+        "ORDER BY\n",
+        "  num_bookings DESC\n",
+        "LIMIT 15"
+      ]
+    },
+    {
+      "name": "tournament_options",
+      "displayName": "Tournament Options",
+      "queryLines": [
+        "SELECT DISTINCT\n",
+        "  tournament_id\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.goals_per_player_per_tournament\n",
+        "ORDER BY\n",
+        "  tournament_id DESC"
+      ]
+    },
+    {
+      "name": "bookings_trend",
+      "displayName": "Bookings Trend - All Tournaments",
+      "queryLines": [
+        "SELECT\n",
+        "  tournament_id,\n",
+        "  SUM(num_bookings) AS total_bookings,\n",
+        "  SUM(yellow_cards) AS total_yellow,\n",
+        "  SUM(red_cards) AS total_red\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.bookings_per_player_per_tournament\n",
+        "GROUP BY\n",
+        "  tournament_id\n",
+        "ORDER BY\n",
+        "  tournament_id ASC"
+      ]
+    },
+    {
+      "name": "subs_trend",
+      "displayName": "Substitutions Trend - All Tournaments",
+      "queryLines": [
+        "SELECT\n",
+        "  tournament_id,\n",
+        "  SUM(times_subbed_on) AS total_substitutions\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.substitutions_per_player_per_tournament\n",
+        "GROUP BY\n",
+        "  tournament_id\n",
+        "ORDER BY\n",
+        "  tournament_id ASC"
+      ]
+    },
+    {
+      "name": "career_goals",
+      "displayName": "Top 5 Scorers Career Trajectory",
+      "queryLines": [
+        "SELECT\n",
+        "  tournament_id,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name,\n",
+        "  num_goals\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.goals_per_player_per_tournament\n",
+        "WHERE\n",
+        "  player_id IN (\n",
+        "    SELECT\n",
+        "      player_id\n",
+        "    FROM\n",
+        "      fifa_worldcup.player_analysis.total_goals_per_player\n",
+        "    ORDER BY\n",
+        "      num_goals DESC\n",
+        "    LIMIT 10\n",
+        "  )\n",
+        "ORDER BY\n",
+        "  tournament_id ASC"
+      ]
+    },
+    {
+      "name": "career_bookings",
+      "displayName": "Top 5 Most Booked Players - Career",
+      "queryLines": [
+        "SELECT\n",
+        "  tournament_id,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name,\n",
+        "  num_bookings\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.bookings_per_player_per_tournament\n",
+        "WHERE\n",
+        "  player_id IN (\n",
+        "    SELECT\n",
+        "      player_id\n",
+        "    FROM\n",
+        "      fifa_worldcup.player_analysis.total_bookings_per_player\n",
+        "    ORDER BY\n",
+        "      num_bookings DESC\n",
+        "    LIMIT 5\n",
+        "  )\n",
+        "ORDER BY\n",
+        "  tournament_id ASC"
+      ]
+    },
+    {
+      "name": "career_penalties",
+      "displayName": "Top 10 Penalty Takers - Career",
+      "queryLines": [
+        "SELECT\n",
+        "  tournament_id,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name,\n",
+        "  num_penalty_kicks\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.penalty_kicks_per_player_per_tournament\n",
+        "WHERE\n",
+        "  player_id IN (\n",
+        "    SELECT\n",
+        "      player_id\n",
+        "    FROM\n",
+        "      fifa_worldcup.player_analysis.total_penalty_kicks_per_player\n",
+        "    ORDER BY\n",
+        "      num_penalty_kicks DESC\n",
+        "    LIMIT 10\n",
+        "  )\n",
+        "ORDER BY\n",
+        "  tournament_id ASC"
+      ]
+    },
+    {
+      "name": "career_subs",
+      "displayName": "Top 5 Most Substituted Players - Career",
+      "queryLines": [
+        "SELECT\n",
+        "  tournament_id,\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name,\n",
+        "  times_subbed_on\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.substitutions_per_player_per_tournament\n",
+        "WHERE\n",
+        "  player_id IN (\n",
+        "    SELECT\n",
+        "      player_id\n",
+        "    FROM\n",
+        "      fifa_worldcup.player_analysis.total_substitutions_per_player\n",
+        "    ORDER BY\n",
+        "      times_subbed_on DESC\n",
+        "    LIMIT 5\n",
+        "  )\n",
+        "ORDER BY\n",
+        "  tournament_id ASC"
+      ]
+    },
+    {
+      "name": "penalties_all_tournaments",
+      "displayName": "Penalty Shootouts - All Tournaments",
+      "queryLines": [
+        "SELECT\n",
+        "  CASE\n",
+        "    WHEN given_name = 'not applicable' THEN family_name\n",
+        "    ELSE CONCAT(given_name, ' ', family_name)\n",
+        "  END AS player_name,\n",
+        "  team_name,\n",
+        "  tournament_id,\n",
+        "  penalty_shootout_goals,\n",
+        "  num_penalty_kicks,\n",
+        "  gender,\n",
+        "  position_code\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.penalty_kicks_per_player_per_tournament\n",
+        "ORDER BY\n",
+        "  penalty_shootout_goals DESC,\n",
+        "  num_penalty_kicks DESC\n",
+        "LIMIT 20"
+      ]
+    },
+    {
+      "name": "gold_top_scorers_per_tournament",
+      "displayName": "Gold — Top Scorers Per Tournament",
+      "queryLines": [
+        "SELECT\n",
+        "  tournament_id,\n",
+        "  rank,\n",
+        "  player_name,\n",
+        "  team_name,\n",
+        "  num_goals,\n",
+        "  position_code\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.gold_top_scorers_per_tournament\n",
+        "ORDER BY\n",
+        "  tournament_id DESC,\n",
+        "  rank ASC"
+      ]
+    },
+    {
+      "name": "gold_career_summary",
+      "displayName": "Gold — Player Career Summary",
+      "queryLines": [
+        "SELECT\n",
+        "  player_name,\n",
+        "  team_name,\n",
+        "  career_goals,\n",
+        "  career_bookings,\n",
+        "  career_subs_on,\n",
+        "  career_subs_off,\n",
+        "  num_penalty_kicks,\n",
+        "  position_code\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.gold_player_career_summary\n",
+        "ORDER BY\n",
+        "  career_goals DESC\n",
+        "LIMIT 20"
+      ]
+    },
+    {
+      "name": "gold_career_top20",
+      "displayName": "Gold — Top 20 Career Goal Scorers",
+      "queryLines": [
+        "SELECT\n",
+        "  player_name,\n",
+        "  team_name,\n",
+        "  career_goals\n",
+        "FROM\n",
+        "  fifa_worldcup.player_analysis.gold_player_career_summary\n",
+        "ORDER BY\n",
+        "  career_goals DESC\n",
+        "LIMIT 20"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "ec46581d",
+      "displayName": "FIFA Tournament Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "header_2022",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## ⚽ FIFA World Cup — Player Performance Analysis\n",
+                "Use the **Tournament** filter in the top bar to switch between tournaments."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "goals_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "goals_2022",
+                  "fields": [
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "num_goals",
+                      "expression": "`num_goals`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 10 Goal Scorers",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "num_goals",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "bookings_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "bookings_2022",
+                  "fields": [
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "num_bookings",
+                      "expression": "`num_bookings`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 10 Most Booked Players",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "num_bookings",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "substitutions_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "substitutions_2022",
+                  "fields": [
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "times_subbed_on",
+                      "expression": "`times_subbed_on`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Most Substituted Players (Times Brought On)",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "times_subbed_on",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "penalties_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "penalty_kicks_2022",
+                  "fields": [
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "penalty_shootout_goals",
+                      "expression": "`penalty_shootout_goals`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Penalty Shootout Leaders",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "penalty_shootout_goals",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 11,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "subs_off_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "subs_off_2022",
+                  "fields": [
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "times_subbed_off",
+                      "expression": "`times_subbed_off`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Most Subbed Off Players",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "times_subbed_off",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 6,
+            "height": 9
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "alltime_records",
+      "displayName": "All-time Tournament Records",
+      "layout": [
+        {
+          "widget": {
+            "name": "header_alltime",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 🏆 FIFA World Cup — All-time Tournament Records\n",
+                "Top goalscorers and most disciplined players across all World Cup tournaments."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "goals_all_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "goals_all_tournaments",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "position_code",
+                      "expression": "`position_code`"
+                    },
+                    {
+                      "name": "num_goals",
+                      "expression": "`num_goals`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "All-time Top Goalscorers per Tournament",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name"
+                  },
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "tournament_id"
+                  },
+                  {
+                    "fieldName": "gender"
+                  },
+                  {
+                    "fieldName": "position_code"
+                  },
+                  {
+                    "fieldName": "num_goals"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "bookings_all_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "bookings_all_tournaments",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "position_code",
+                      "expression": "`position_code`"
+                    },
+                    {
+                      "name": "num_bookings",
+                      "expression": "`num_bookings`"
+                    },
+                    {
+                      "name": "yellow_cards",
+                      "expression": "`yellow_cards`"
+                    },
+                    {
+                      "name": "red_cards",
+                      "expression": "`red_cards`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "All-time Most Booked Players per Tournament",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name"
+                  },
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "tournament_id"
+                  },
+                  {
+                    "fieldName": "gender"
+                  },
+                  {
+                    "fieldName": "position_code"
+                  },
+                  {
+                    "fieldName": "num_bookings"
+                  },
+                  {
+                    "fieldName": "yellow_cards"
+                  },
+                  {
+                    "fieldName": "red_cards"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "subs_all_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "substitutions_all_tournaments",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "position_code",
+                      "expression": "`position_code`"
+                    },
+                    {
+                      "name": "times_subbed_on",
+                      "expression": "`times_subbed_on`"
+                    },
+                    {
+                      "name": "times_subbed_off",
+                      "expression": "`times_subbed_off`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "All-time Most Substituted Players per Tournament",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name"
+                  },
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "tournament_id"
+                  },
+                  {
+                    "fieldName": "gender"
+                  },
+                  {
+                    "fieldName": "position_code"
+                  },
+                  {
+                    "fieldName": "times_subbed_on"
+                  },
+                  {
+                    "fieldName": "times_subbed_off"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "penalties_all_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "penalties_all_tournaments",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "position_code",
+                      "expression": "`position_code`"
+                    },
+                    {
+                      "name": "penalty_shootout_goals",
+                      "expression": "`penalty_shootout_goals`"
+                    },
+                    {
+                      "name": "num_penalty_kicks",
+                      "expression": "`num_penalty_kicks`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "All-time Top Penalty Shootout Takers per Tournament",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name"
+                  },
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "tournament_id"
+                  },
+                  {
+                    "fieldName": "gender"
+                  },
+                  {
+                    "fieldName": "position_code"
+                  },
+                  {
+                    "fieldName": "penalty_shootout_goals"
+                  },
+                  {
+                    "fieldName": "num_penalty_kicks"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 32,
+            "width": 12,
+            "height": 10
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "alltime_goalscorers",
+      "displayName": "All-Time Records",
+      "layout": [
+        {
+          "widget": {
+            "name": "total_goals_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "total_goals_all_time",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "num_goals",
+                      "expression": "`num_goals`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Top Goalscorers of All Time",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name"
+                  },
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "gender"
+                  },
+                  {
+                    "fieldName": "num_goals"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "total_subs_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "total_substitutions",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "times_subbed_on",
+                      "expression": "`times_subbed_on`"
+                    },
+                    {
+                      "name": "times_subbed_off",
+                      "expression": "`times_subbed_off`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Top Substituted Players of All Time",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name"
+                  },
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "gender"
+                  },
+                  {
+                    "fieldName": "times_subbed_on"
+                  },
+                  {
+                    "fieldName": "times_subbed_off"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "total_penalties_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "total_penalty_kicks",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "penalty_shootout_goals",
+                      "expression": "`penalty_shootout_goals`"
+                    },
+                    {
+                      "name": "num_penalty_kicks",
+                      "expression": "`num_penalty_kicks`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Top Penalty Kick Takers of All Time",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name"
+                  },
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "gender"
+                  },
+                  {
+                    "fieldName": "penalty_shootout_goals"
+                  },
+                  {
+                    "fieldName": "num_penalty_kicks"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 20,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "total_bookings_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "total_bookings",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "num_bookings",
+                      "expression": "`num_bookings`"
+                    },
+                    {
+                      "name": "yellow_cards",
+                      "expression": "`yellow_cards`"
+                    },
+                    {
+                      "name": "red_cards",
+                      "expression": "`red_cards`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Most Booked Players of All Time",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name"
+                  },
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "gender"
+                  },
+                  {
+                    "fieldName": "num_bookings"
+                  },
+                  {
+                    "fieldName": "yellow_cards"
+                  },
+                  {
+                    "fieldName": "red_cards"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 30,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "penalties_all_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "penalties_all_tournaments",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "gender",
+                      "expression": "`gender`"
+                    },
+                    {
+                      "name": "position_code",
+                      "expression": "`position_code`"
+                    },
+                    {
+                      "name": "penalty_shootout_goals",
+                      "expression": "`penalty_shootout_goals`"
+                    },
+                    {
+                      "name": "num_penalty_kicks",
+                      "expression": "`num_penalty_kicks`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "title": "All-time Top Penalty Shootout Takers per Tournament",
+                "showTitle": true
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name"
+                  },
+                  {
+                    "fieldName": "team_name"
+                  },
+                  {
+                    "fieldName": "tournament_id"
+                  },
+                  {
+                    "fieldName": "gender"
+                  },
+                  {
+                    "fieldName": "position_code"
+                  },
+                  {
+                    "fieldName": "penalty_shootout_goals"
+                  },
+                  {
+                    "fieldName": "num_penalty_kicks"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 40,
+            "width": 12,
+            "height": 10
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "cbbc3a17",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "5bada461",
+            "queries": [
+              {
+                "name": "dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a1435127fbd1740423d3a0861_tournament_id",
+                "query": {
+                  "datasetName": "tournament_options",
+                  "fields": [
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "tournament_id_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a143512699525a7be6b9a8ca8_tournament_id",
+                "query": {
+                  "datasetName": "goals_2022",
+                  "parameters": [
+                    {
+                      "name": "tournament_id",
+                      "keyword": "tournament_id"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a143512629446877cc3d117c1_tournament_id",
+                "query": {
+                  "datasetName": "bookings_2022",
+                  "parameters": [
+                    {
+                      "name": "tournament_id",
+                      "keyword": "tournament_id"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a14351241b0a0303d7515d320_tournament_id",
+                "query": {
+                  "datasetName": "substitutions_2022",
+                  "parameters": [
+                    {
+                      "name": "tournament_id",
+                      "keyword": "tournament_id"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a143512658b567c465edca6df_tournament_id",
+                "query": {
+                  "datasetName": "penalty_kicks_2022",
+                  "parameters": [
+                    {
+                      "name": "tournament_id",
+                      "keyword": "tournament_id"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a1435126cbd8047e8c8f18a22_tournament_id",
+                "query": {
+                  "datasetName": "subs_off_2022",
+                  "parameters": [
+                    {
+                      "name": "tournament_id",
+                      "keyword": "tournament_id"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "title": "Tournament",
+                "showTitle": true
+              },
+              "version": 2,
+              "selection": {
+                "defaultSelection": {
+                  "values": {
+                    "dataType": "STRING",
+                    "values": [
+                      {
+                        "value": "WC-2022"
+                      }
+                    ]
+                  }
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "tournament_id",
+                    "queryName": "dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a1435127fbd1740423d3a0861_tournament_id"
+                  },
+                  {
+                    "parameterName": "tournament_id",
+                    "queryName": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a143512699525a7be6b9a8ca8_tournament_id"
+                  },
+                  {
+                    "parameterName": "tournament_id",
+                    "queryName": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a143512629446877cc3d117c1_tournament_id"
+                  },
+                  {
+                    "parameterName": "tournament_id",
+                    "queryName": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a14351241b0a0303d7515d320_tournament_id"
+                  },
+                  {
+                    "parameterName": "tournament_id",
+                    "queryName": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a143512658b567c465edca6df_tournament_id"
+                  },
+                  {
+                    "parameterName": "tournament_id",
+                    "queryName": "parameter_dashboards/01f180dc310a1697a3ba138cc5c7dae7/datasets/01f1846a1435126cbd8047e8c8f18a22_tournament_id"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "trends",
+      "displayName": "Tournament Trends",
+      "layout": [
+        {
+          "widget": {
+            "name": "header_trends",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 📈 FIFA World Cup — Tournament Trends\n",
+                "Historical trends across all World Cup tournaments. Note: the Tournament global filter does not apply to this page — all charts show the full history."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "total_goals_line",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "career_goals",
+                  "fields": [
+                    {
+                      "name": "num_goals",
+                      "expression": "`num_goals`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 5 All-time Scorers — Goals per Tournament",
+                "showTitle": true
+              },
+              "widgetType": "heatmap",
+              "encodings": {
+                "x": {
+                  "fieldName": "tournament_id",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "num_goals",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "greens"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "avg_goals_line",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "career_bookings",
+                  "fields": [
+                    {
+                      "name": "num_bookings",
+                      "expression": "`num_bookings`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 5 Most Booked Players — Career",
+                "showTitle": true
+              },
+              "widgetType": "heatmap",
+              "encodings": {
+                "x": {
+                  "fieldName": "tournament_id",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "num_bookings",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "orangered"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "bookings_line",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "career_subs",
+                  "fields": [
+                    {
+                      "name": "times_subbed_on",
+                      "expression": "`times_subbed_on`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 5 Most Substituted Players — Career",
+                "showTitle": true
+              },
+              "widgetType": "heatmap",
+              "encodings": {
+                "x": {
+                  "fieldName": "tournament_id",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "times_subbed_on",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "blues"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "subs_line",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "career_penalties",
+                  "fields": [
+                    {
+                      "name": "num_penalty_kicks",
+                      "expression": "`num_penalty_kicks`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 10 Penalty Takers — Career",
+                "showTitle": true
+              },
+              "widgetType": "heatmap",
+              "encodings": {
+                "x": {
+                  "fieldName": "tournament_id",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "num_penalty_kicks",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "plasma"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 11,
+            "width": 6,
+            "height": 9
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "gold_player_analysis",
+      "displayName": "Gold — Player Analysis",
+      "layout": [
+        {
+          "widget": {
+            "name": "gold_top_scorers_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "gold_top_scorers_per_tournament",
+                  "fields": [
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "rank",
+                      "expression": "`rank`"
+                    },
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "position_code",
+                      "expression": "`position_code`"
+                    },
+                    {
+                      "name": "num_goals",
+                      "expression": "`num_goals`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Top Scorers Per Tournament",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "tournament_id",
+                    "displayName": "Tournament"
+                  },
+                  {
+                    "fieldName": "rank",
+                    "displayName": "Rank"
+                  },
+                  {
+                    "fieldName": "player_name",
+                    "displayName": "Player"
+                  },
+                  {
+                    "fieldName": "team_name",
+                    "displayName": "Team"
+                  },
+                  {
+                    "fieldName": "position_code",
+                    "displayName": "Position"
+                  },
+                  {
+                    "fieldName": "num_goals",
+                    "displayName": "Goals"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "gold_top_scorers_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "gold_top_scorers_per_tournament",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "tournament_id",
+                      "expression": "`tournament_id`"
+                    },
+                    {
+                      "name": "num_goals",
+                      "expression": "`num_goals`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`rank` IN (1)"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top Scorer Per Tournament",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "tournament_id",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "num_goals",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "gold_career_summary_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "gold_career_summary",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "position_code",
+                      "expression": "`position_code`"
+                    },
+                    {
+                      "name": "career_goals",
+                      "expression": "`career_goals`"
+                    },
+                    {
+                      "name": "career_bookings",
+                      "expression": "`career_bookings`"
+                    },
+                    {
+                      "name": "career_subs_on",
+                      "expression": "`career_subs_on`"
+                    },
+                    {
+                      "name": "career_subs_off",
+                      "expression": "`career_subs_off`"
+                    },
+                    {
+                      "name": "num_penalty_kicks",
+                      "expression": "`num_penalty_kicks`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Top 20 All-time Career Stats",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "player_name",
+                    "displayName": "Player"
+                  },
+                  {
+                    "fieldName": "team_name",
+                    "displayName": "Team"
+                  },
+                  {
+                    "fieldName": "position_code",
+                    "displayName": "Position"
+                  },
+                  {
+                    "fieldName": "career_goals",
+                    "displayName": "Career Goals"
+                  },
+                  {
+                    "fieldName": "career_bookings",
+                    "displayName": "Career Bookings"
+                  },
+                  {
+                    "fieldName": "career_subs_on",
+                    "displayName": "Subs On"
+                  },
+                  {
+                    "fieldName": "career_subs_off",
+                    "displayName": "Subs Off"
+                  },
+                  {
+                    "fieldName": "num_penalty_kicks",
+                    "displayName": "Penalty Kicks"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "gold_career_top20_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "gold_career_top20",
+                  "fields": [
+                    {
+                      "name": "player_name",
+                      "expression": "`player_name`"
+                    },
+                    {
+                      "name": "team_name",
+                      "expression": "`team_name`"
+                    },
+                    {
+                      "name": "career_goals",
+                      "expression": "`career_goals`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 20 All-Time Career Goal Scorers",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "player_name",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "career_goals",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "team_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 9,
+            "width": 6,
+            "height": 9
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
